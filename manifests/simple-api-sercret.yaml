@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: simple-api-secret
+  namespace: simple-api
+type: Opaque
+data:
+  DBUSER: cm9vdA==
+  DBPASS: MTIzNDU2Nzg=
+  MYSQL_ROOT_PASSWORD: MTIzNDU2Nzg=
+
+  # Example:
+  # password: {{ .Values.password | b64enc }}

@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  simple-api
+  namespace: simple-api
+  labels:
+    app:  simple-api
+spec:
+  selector:
+    matchLabels:
+      app: simple-api
+  replicas: 4
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  simple-api
+    spec:
+      containers:
+      - name:  simple-api
+        image:  localhost:5001/simple-api:1.0
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        env:
+        - name: DBUSER
+          valueFrom:
+            secretKeyRef:
+              name: simple-api-secret
+              key: DBUSER
+        - name: DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: simple-api-secret
+              key: DBPASS
+        - name: DBADDR
+          value: mysql:3307
+        ports:
+        - containerPort:  8080
+          name:  rest-api
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-api
+  namespace: simple-api
+spec:
+  selector:
+    app: simple-api
+  type: ClusterIP
+  sessionAffinity: None
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  ports:
+  - name: simple-api
+    protocol: TCP
+    port: 8082
+    targetPort: rest-api
+    # If you set the `spec.type` field to `NodePort` and you want a specific port number,
+    # you can specify a value in the `spec.ports[*].nodePort` field.
