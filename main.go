@@ -85,5 +85,5 @@ func main() {
 	router := gin.Default()
 	router.GET("/players", getPlayersAll)
 	router.POST("/players", postPlayer)
-	router.Run("0.0.0.0:8080")
+	router.Run("0.0.0.0:8081")
 }
